@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Micro-Habits Tracker</title>
+    <title>Pulse Habits</title>
     <!-- Подключаем Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Подключаем Telegram WebApp API -->
@@ -13,40 +13,63 @@
         .habit-card {
             transition: all 0.2s ease-in-out;
         }
+        /* Безопасное принудительное отображение текста в темной теме Telegram */
+        .theme-dependent-text {
+            color: var(--tg-theme-text-color, #111827);
+        }
+        @media (prefers-color-scheme: dark) {
+            .theme-dependent-text {
+                color: var(--tg-theme-text-color, #f9fafb);
+            }
+        }
     </style>
 </head>
-<body class="bg-[--tg-theme-bg-color] text-[--tg-theme-text-color] font-sans antialiased min-h-screen p-4 flex flex-col justify-between selection:bg-teal-500/30">
+<body class="bg-[--tg-theme-bg-color, #fafafa] text-[--tg-theme-text-color, #111827] dark:bg-[#18222d] dark:text-[#f5f5f5] font-sans antialiased min-h-screen p-4 flex flex-col justify-between selection:bg-teal-500/30">
 
-    <!-- Основной контейнер -->
-    <main class="w-full max-w-md mx-auto space-y-6 flex-grow">
+    <!-- Основной контейнер приложения -->
+    <main id="main-content" class="w-full max-w-md mx-auto space-y-6 flex-grow flex flex-col">
         
         <!-- Шапка и Прогресс -->
         <header class="text-center space-y-3 pt-4">
-            <h1 class="text-2xl font-bold tracking-tight">Мой День</h1>
-            <p class="text-sm opacity-60" id="date-string">Загрузка даты...</p>
+            <h1 class="text-2xl font-bold tracking-tight theme-dependent-text">Мой День</h1>
+            <p class="text-sm opacity-60 theme-dependent-text" id="date-string">Загрузка даты...</p>
             
             <!-- Прогресс-бар -->
-            <div class="space-y-1">
+            <div class="space-y-2">
                 <div class="flex justify-between text-xs font-semibold px-1">
-                    <span>Прогресс</span>
-                    <span id="progress-text">0%</span>
+                    <span class="theme-dependent-text opacity-80">Прогресс</span>
+                    <span id="progress-text" class="theme-dependent-text font-bold">0%</span>
                 </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 h-3 rounded-full overflow-hidden">
+                <div class="w-full bg-gray-200 dark:bg-gray-800 h-3 rounded-full overflow-hidden shadow-inner">
                     <div id="progress-bar" class="bg-gradient-to-r from-teal-400 to-emerald-500 h-full w-0 transition-all duration-500 ease-out"></div>
                 </div>
             </div>
         </header>
 
-        <!-- Список привычек -->
-        <section class="space-y-3" id="habits-container">
-            <!-- Сюда ИИ/JS добавит привычки динамически -->
-        </section>
+        <!-- Контейнер со списками (Привычки ИЛИ Экран Успеха) -->
+        <div id="content-slider" class="flex-grow flex flex-col justify-center py-4">
+            <!-- Список привычек -->
+            <section class="space-y-3 w-full" id="habits-container">
+                <!-- Сюда JS добавит привычки -->
+            </section>
+
+            <!-- Финальный экран (скрыт по умолчанию) -->
+            <section id="success-screen" class="hidden flex-col items-center justify-center text-center space-y-4 py-8 animate-fade-in">
+                <div class="w-24 h-24 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-5xl shadow-lg border border-emerald-500/30 animate-bounce">
+                    ✓
+                </div>
+                <h2 class="text-xl font-bold tracking-tight theme-dependent-text">Отличная работа!</h2>
+                <p class="text-base text-emerald-500 dark:text-emerald-400 font-medium px-4">
+                    Все цели на сегодня выполнены
+                </p>
+            </section>
+        </div>
 
     </main>
 
     <!-- Нижняя панель с кнопкой обновления -->
-    <footer class="w-full max-w-md mx-auto pt-6 pb-4">
-        <button id="reset-btn" class="w-full py-3 px-4 rounded-xl font-medium text-sm text-center border border-dashed border-gray-300 dark:border-gray-600 opacity-60 hover:opacity-100 active:scale-[0.98] transition-all cursor-pointer">
+    <footer class="w-full max-w-md mx-auto pt-4 pb-2">
+        <button id="reset-btn" class="w-full py-3 px-4 rounded-xl font-medium text-sm text-center border border-dashed border-gray-300 dark:border-gray-700 opacity-50 text-[--tg-theme-text-color] dark:text-[#f5f5f5] hover:opacity-100 active:scale-[0.98] transition-all cursor-pointer">
             🔄 Получить новые привычки
         </button>
     </footer>
@@ -55,7 +78,7 @@
         // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
         tg.ready();
-        tg.expand(); // Расширяем на весь экран смартфона
+        tg.expand();
 
         // Пул из 15 микро-привычек
         const habitsPool = [
@@ -78,36 +101,34 @@
 
         let currentHabits = [];
 
-        // Установка текущей даты
+        // Настройка отображения даты
         function setDate() {
             const options = { weekday: 'long', month: 'long', day: 'numeric' };
             document.getElementById('date-string').innerText = new Date().toLocaleDateString('ru-RU', options);
         }
 
-        // Выбор 3 случайных привычек из пула
+        // Случайные привычки
         function getRandomHabits() {
             const shuffled = [...habitsPool].sort(() => 0.5 - Math.random());
             return shuffled.slice(0, 3).map(h => ({ ...h, completed: false }));
         }
 
-        // Загрузка данных (из localStorage или генерация новых)
+        // Загрузка состояния
         function loadHabits() {
             const saved = localStorage.getItem('tg_mini_app_habits');
             const savedDate = localStorage.getItem('tg_mini_app_habits_date');
             const today = new Date().toDateString();
 
-            // Если есть сохраненные привычки и они за сегодня — берем их
             if (saved && savedDate === today) {
                 currentHabits = JSON.parse(saved);
             } else {
-                // Иначе генерируем новые и привязываем к сегодняшней дате
                 currentHabits = getRandomHabits();
                 saveHabits(today);
             }
             renderHabits();
         }
 
-        // Сохранение состояния
+        // Сохранение
         function saveHabits(dateString = null) {
             localStorage.setItem('tg_mini_app_habits', JSON.stringify(currentHabits));
             if (dateString) {
@@ -115,25 +136,10 @@
             }
         }
 
-        // Обновление прогресс-бара
-        function updateProgress() {
-            const completedCount = currentHabits.filter(h => h.completed).length;
-            const percentage = Math.round((completedCount / currentHabits.length) * 100) || 0;
-            
-            document.getElementById('progress-text').innerText = `${percentage}%`;
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
-
-            // Тактильный отклик от Telegram при 100% выполнении
-            if (percentage === 100 && tg.HapticFeedback) {
-                tg.HapticFeedback.notificationOccurred('success');
-            }
-        }
-
-        // Переключение статуса привычки
+        // Переключение статуса задачи
         function toggleHabit(index) {
             currentHabits[index].completed = !currentHabits[index].completed;
             
-            // Легкая вибрация при клике (работает внутри Telegram на смартфонах)
             if (tg.HapticFeedback) {
                 tg.HapticFeedback.impactOccurred('light');
             }
@@ -142,19 +148,43 @@
             renderHabits();
         }
 
-        // Отрисовка интерфейса
+        // Отрисовка элементов интерфейса
         function renderHabits() {
             const container = document.getElementById('habits-container');
+            const successScreen = document.getElementById('success-screen');
             container.innerHTML = '';
 
+            const completedCount = currentHabits.filter(h => h.completed).length;
+            const percentage = Math.round((completedCount / currentHabits.length) * 100) || 0;
+            
+            // Обновляем прогресс-бар
+            document.getElementById('progress-text').innerText = `${percentage}%`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+
+            // Если все задачи выполнены, показываем праздничный экран
+            if (percentage === 100) {
+                container.classList.add('hidden');
+                successScreen.classList.remove('hidden');
+                successScreen.classList.add('flex');
+                
+                if (tg.HapticFeedback) {
+                    tg.HapticFeedback.notificationOccurred('success');
+                }
+            } else {
+                // Если не все выполнены, показываем стандартный список
+                container.classList.remove('hidden');
+                successScreen.classList.add('hidden');
+                successScreen.classList.remove('flex');
+            }
+
+            // Генерируем карточки привычек
             currentHabits.forEach((habit, index) => {
                 const card = document.createElement('div');
                 
-                // Стилизация карточки в зависимости от состояния (выполнено или нет)
-                const baseClasses = "habit-card flex items-center justify-between p-4 rounded-xl border cursor-pointer select-none ";
+                const baseClasses = "habit-card flex items-center justify-between p-4 rounded-xl border cursor-pointer select-none transition-colors ";
                 const stateClasses = habit.completed 
-                    ? "bg-emerald-500/10 border-emerald-500/40 text-[--tg-theme-text-color] opacity-80 line-through" 
-                    : "bg-[--tg-theme-secondary-bg-color] border-gray-200 dark:border-gray-800 hover:border-teal-500/50 shadow-sm";
+                    ? "bg-emerald-500/10 border-emerald-500/40 opacity-50 line-through text-[--tg-theme-text-color] dark:text-[#f5f5f5]" 
+                    : "bg-[--tg-theme-secondary-bg-color, #ffffff] dark:bg-[#24303f] border-gray-200 dark:border-gray-800 text-[--tg-theme-text-color] dark:text-[#f5f5f5] hover:border-teal-500/40 shadow-sm";
 
                 card.className = baseClasses + stateClasses;
                 card.onclick = () => toggleHabit(index);
@@ -174,20 +204,18 @@
                 `;
                 container.appendChild(card);
             });
-
-            updateProgress();
         }
 
-        // Обработка кнопки сброса/обновления задач
+        // Логика кнопки сброса/обновления задач
         document.getElementById('reset-btn').onclick = () => {
-            if (confirm("Хотите сбросить текущий прогресс и получить новые микро-привычки?")) {
+            if (confirm("Хотите сбросить прогресс и обновить список привычек на сегодня?")) {
                 currentHabits = getRandomHabits();
                 saveHabits(new Date().toDateString());
                 renderHabits();
             }
         };
 
-        // Запуск приложения
+        // Старт
         setDate();
         loadHabits();
     </script>

@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pulse Habits</title>
-    <!-- Подключаем Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Подключаем Telegram WebApp API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* Плавные переходы для интерактивных элементов */
@@ -26,9 +24,7 @@
 </head>
 <body class="bg-[--tg-theme-bg-color, #fafafa] text-[--tg-theme-text-color, #111827] dark:bg-[#18222d] dark:text-[#f5f5f5] font-sans antialiased min-h-screen p-4 flex flex-col justify-between selection:bg-teal-500/30">
 
-    <!-- ПРИВЕТСТВЕННЫЙ ЭКРАН (Показывается при первом входе за день) -->
-    <div id="welcome-screen" class="hidden fixed inset-0 bg-[--tg-theme-bg-color, #fafafa] dark:bg-[#18222d] z-50 flex-col items-center justify-center text-center p-6 space-y-6 animate-fade-in">
-        <!-- Адаптивный смайлик времени суток -->
+    <div id="welcome-screen" class="hidden fixed inset-0 bg-[--tg-theme-bg-color, #fafafa] dark:bg-[#18222d] z-50 flex-col items-center justify-center text-center p-6 space-y-6">
         <div id="welcome-emoji" class="text-6xl subpixel-antialiased drop-shadow-md">☀️</div>
         
         <div class="space-y-2 max-w-sm">
@@ -43,15 +39,12 @@
         </button>
     </div>
 
-    <!-- ОСНОВНОЙ КОНТЕНТ ПРИЛОЖЕНИЯ -->
     <main id="main-content" class="w-full max-w-md mx-auto space-y-6 flex-grow flex flex-col">
         
-        <!-- Шапка и Прогресс -->
         <header class="text-center space-y-3 pt-4">
             <h1 class="text-2xl font-bold tracking-tight theme-dependent-text">Мой День</h1>
             <p class="text-sm opacity-60 theme-dependent-text" id="date-string">Загрузка даты...</p>
             
-            <!-- Прогресс-бар -->
             <div class="space-y-2">
                 <div class="flex justify-between text-xs font-semibold px-1">
                     <span class="theme-dependent-text opacity-80">Прогресс</span>
@@ -63,36 +56,28 @@
             </div>
         </header>
 
-        <!-- Контейнер со списками (Привычки ИЛИ Экран Успеха) -->
-        <div id="content-slider" class="flex-grow flex flex-col justify-center py-4">
-            <!-- Список привычек -->
-            <section class="space-y-3 w-full" id="habits-container">
-                <!-- Сюда JS добавит привычки -->
+        <div id="content-slider" class="flex-grow flex flex-col justify-start py-4 space-y-4">
+            
+            <section id="success-banner" class="hidden flex-col items-center justify-center text-center space-y-2 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <div class="text-3xl animate-bounce">🎉</div>
+                <h2 class="text-base font-bold text-emerald-500 dark:text-emerald-400">Все цели выполнены!</h2>
+                <p class="text-xs opacity-70 theme-dependent-text">Ты супер. Хочешь взять дополнительную нагрузку?</p>
             </section>
 
-            <!-- Финальный экран -->
-            <section id="success-screen" class="hidden flex-col items-center justify-center text-center space-y-4 py-8">
-                <div class="w-24 h-24 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-5xl shadow-lg border border-emerald-500/30">
-                    ✓
-                </div>
-                <h2 class="text-xl font-bold tracking-tight theme-dependent-text">Отличная работа!</h2>
-                <p class="text-base text-emerald-500 dark:text-emerald-400 font-medium px-4">
-                    Все цели на сегодня выполнены
-                </p>
-            </section>
+            <section class="space-y-3 w-full" id="habits-container">
+                </section>
         </div>
 
     </main>
 
-    <!-- Нижняя панель с кнопкой обновления -->
     <footer class="w-full max-w-md mx-auto pt-4 pb-2">
-        <button id="reset-btn" class="w-full py-3 px-4 rounded-xl font-medium text-sm text-center border border-dashed border-gray-300 dark:border-gray-700 opacity-50 text-[--tg-theme-text-color] dark:text-[#f5f5f5] hover:opacity-100 active:scale-[0.98] transition-all cursor-pointer">
-            🔄 Получить новые привычки
+        <button id="action-btn" class="w-full py-3 px-4 rounded-xl font-medium text-sm text-center border border-dashed border-gray-300 dark:border-gray-700 opacity-50 text-[--tg-theme-text-color] dark:text-[#f5f5f5] hover:opacity-100 active:scale-[0.98] transition-all cursor-pointer">
+            🔄 Сбросить и обновить день
         </button>
     </footer>
 
     <script>
-        // ИИ/Инициализация Telegram WebApp
+        // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
@@ -130,18 +115,24 @@
             const emojiContainer = document.getElementById('welcome-emoji');
             
             if (hour >= 5 && hour < 12) {
-                emojiContainer.innerText = "☀️"; // Утро: солнце
+                emojiContainer.innerText = "☀️";
             } else if (hour >= 12 && hour < 18) {
-                emojiContainer.innerText = "☁️"; // День: облачко
+                emojiContainer.innerText = "☁️";
             } else {
-                emojiContainer.innerText = "🌙"; // Вечер/Ночь: месяц
+                emojiContainer.innerText = "🌙";
             }
         }
 
-        // Случайные привычки
-        function getRandomHabits() {
-            const shuffled = [...habitsPool].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, 3).map(h => ({ ...h, completed: false }));
+        // Выбор 3 случайных привычек (исключая те, что уже есть на экране)
+        function getRandomHabits(count = 3) {
+            const existingIds = currentHabits.map(h => h.id);
+            const availableHabits = habitsPool.filter(h => !existingIds.includes(h.id));
+            
+            // Если пул пуст (пользователь выполнил все 15 привычек за день!) — берем любые
+            const poolToUse = availableHabits.length >= count ? availableHabits : habitsPool;
+            
+            const shuffled = [...poolToUse].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count).map(h => ({ ...h, completed: false }));
         }
 
         // Загрузка состояния приложения
@@ -153,15 +144,11 @@
 
             if (saved && savedDate === today) {
                 currentHabits = JSON.parse(saved);
-                
-                // Если пользователь сегодня уже заходил и нажимал кнопку "Поехали!",
-                // приветственный экран показывать больше не нужно
                 if (welcomeViewedDate !== today) {
                     showWelcomeScreen(today);
                 }
             } else {
-                // Если наступил новый день, генерируем привычки и принудительно открываем приветствие
-                currentHabits = getRandomHabits();
+                currentHabits = getRandomHabits(3);
                 saveHabits(today);
                 showWelcomeScreen(today);
             }
@@ -172,21 +159,37 @@
         function showWelcomeScreen(todayString) {
             setWelcomeEmoji();
             const welcomeScreen = document.getElementById('welcome-screen');
-            welcomeScreen.classList.remove('hidden');
-            welcomeScreen.classList.add('flex');
+            welcomeScreen.className = "fixed inset-0 bg-[--tg-theme-bg-color, #fafafa] dark:bg-[#18222d] z-50 flex flex-col items-center justify-center text-center p-6 space-y-6";
 
-            // Клик по кнопке "Поехали!"
             document.getElementById('start-day-btn').onclick = () => {
                 if (tg.HapticFeedback) {
                     tg.HapticFeedback.impactOccurred('medium');
                 }
-                // Запоминаем, что приветствие на сегодня просмотрено
                 localStorage.setItem('tg_mini_app_welcome_viewed', todayString);
-                
-                // Скрываем экран
-                welcomeScreen.classList.remove('flex');
-                welcomeScreen.classList.add('hidden');
+                welcomeScreen.className = "hidden";
             };
+        }
+
+        // Добавление 3 новых дополнительных привычек
+        function addMoreHabits() {
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+            const newHabits = getRandomHabits(3);
+            currentHabits = [...currentHabits, ...newHabits];
+            saveHabits(new Date().toDateString());
+            renderHabits();
+        }
+
+        // Полный сброс дня
+        function resetDay() {
+            if (confirm("Хотите полностью сбросить прогресс и обновить список привычек на сегодня?")) {
+                currentHabits = [];
+                currentHabits = getRandomHabits(3);
+                saveHabits(new Date().toDateString());
+                showWelcomeScreen(new Date().toDateString());
+                renderHabits();
+            }
         }
 
         // Сохранение данных
@@ -209,38 +212,55 @@
             renderHabits();
         }
 
-        // Отрисовка элементов интерфейса
+        // Отрисовка интерфейса (Привычки, Прогресс, Кнопки)
         function renderHabits() {
             const container = document.getElementById('habits-container');
-            const successScreen = document.getElementById('success-screen');
+            const successBanner = document.getElementById('success-banner');
+            const actionBtn = document.getElementById('action-btn');
             container.innerHTML = '';
 
             const completedCount = currentHabits.filter(h => h.completed).length;
-            const percentage = Math.round((completedCount / currentHabits.length) * 100) || 0;
+            const totalCount = currentHabits.length;
+            const percentage = Math.round((completedCount / totalCount) * 100) || 0;
             
-            document.getElementById('progress-text').innerText = `${percentage}%`;
+            // Обновление прогресс-бара
+            document.getElementById('progress-text').innerText = `${percentage}% (${completedCount}/${totalCount})`;
             document.getElementById('progress-bar').style.width = `${percentage}%`;
 
-            if (percentage === 100) {
-                container.classList.add('hidden');
-                successScreen.classList.remove('hidden');
-                successScreen.classList.add('flex');
+            // Управление отображением баннера Успеха и функционалом нижней кнопки
+            if (completedCount === totalCount && totalCount > 0) {
+                successBanner.classList.remove('hidden');
+                successBanner.classList.add('flex');
                 
-                if (tg.HapticFeedback) {
+                // МЕНЯЕМ КНОПКУ: Теперь она добавляет новые задачи
+                actionBtn.innerText = "➕ Получить дополнительные привычки";
+                actionBtn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm text-center bg-emerald-500 text-white shadow-md active:scale-[0.98] transition-all cursor-pointer opacity-100";
+                actionBtn.onclick = addMoreHabits;
+
+                // Вибрация успеха в ТГ (срабатывает только в момент финиша)
+                if (tg.HapticFeedback && !window.lastStatusFinished) {
                     tg.HapticFeedback.notificationOccurred('success');
                 }
+                window.lastStatusFinished = true;
             } else {
-                container.classList.remove('hidden');
-                successScreen.classList.add('hidden');
-                successScreen.classList.remove('flex');
+                successBanner.classList.add('hidden');
+                successBanner.classList.remove('flex');
+                
+                // ВОЗВРАЩАЕМ КНОПКУ СБРОСА: Если есть незакрытые задачи
+                actionBtn.innerText = "🔄 Сбросить и обновить день";
+                actionBtn.className = "w-full py-3 px-4 rounded-xl font-medium text-sm text-center border border-dashed border-gray-300 dark:border-gray-700 opacity-50 text-[--tg-theme-text-color] dark:text-[#f5f5f5] hover:opacity-100 active:scale-[0.98] transition-all cursor-pointer";
+                actionBtn.onclick = resetDay;
+                
+                window.lastStatusFinished = false;
             }
 
+            // Рендеринг карточек привычек
             currentHabits.forEach((habit, index) => {
                 const card = document.createElement('div');
                 
                 const baseClasses = "habit-card flex items-center justify-between p-4 rounded-xl border cursor-pointer select-none transition-colors ";
                 const stateClasses = habit.completed 
-                    ? "bg-emerald-500/10 border-emerald-500/40 opacity-50 line-through text-[--tg-theme-text-color] dark:text-[#f5f5f5]" 
+                    ? "bg-emerald-500/10 border-emerald-500/30 opacity-50 line-through text-[--tg-theme-text-color] dark:text-[#f5f5f5]" 
                     : "bg-[--tg-theme-secondary-bg-color, #ffffff] dark:bg-[#24303f] border-gray-200 dark:border-gray-800 text-[--tg-theme-text-color] dark:text-[#f5f5f5] hover:border-teal-500/40 shadow-sm";
 
                 card.className = baseClasses + stateClasses;
@@ -262,18 +282,6 @@
                 container.appendChild(card);
             });
         }
-
-        // Кнопка сброса
-        document.getElementById('reset-btn').onclick = () => {
-            if (confirm("Хотите сбросить прогресс и обновить список привычек на сегодня?")) {
-                currentHabits = getRandomHabits();
-                saveHabits(new Date().toDateString());
-                
-                // При принудительном сбросе заново показываем утренний экран для нового пула задач
-                showWelcomeScreen(new Date().toDateString());
-                renderHabits();
-            }
-        };
 
         // Старт
         setDate();

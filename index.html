@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pulse Habits</title>
+    <!-- Подключаем Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Подключаем Telegram WebApp API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Плавные переходы для интерактивных элементов */
         .habit-card {
             transition: all 0.2s ease-in-out;
         }
-        /* Безопасное принудительное отображение текста в темной теме Telegram */
         .theme-dependent-text {
             color: var(--tg-theme-text-color, #111827);
         }
@@ -24,30 +24,44 @@
 </head>
 <body class="bg-[--tg-theme-bg-color, #fafafa] text-[--tg-theme-text-color, #111827] dark:bg-[#18222d] dark:text-[#f5f5f5] font-sans antialiased min-h-screen p-4 flex flex-col justify-between selection:bg-teal-500/30">
 
+    <!-- 1. ПРИВЕТСТВЕННЫЙ ЭКРАН (При первом входе за день) -->
     <div id="welcome-screen" class="hidden fixed inset-0 bg-[--tg-theme-bg-color, #fafafa] dark:bg-[#18222d] z-50 flex-col items-center justify-center text-center p-6 space-y-6">
         <div id="welcome-emoji" class="text-6xl subpixel-antialiased drop-shadow-md">☀️</div>
-        
         <div class="space-y-2 max-w-sm">
             <h2 class="text-2xl font-bold tracking-tight theme-dependent-text">Привет!</h2>
-            <p class="text-base opacity-90 theme-dependent-text px-4">
-                Твои три привычки уже ждут тебя! Готов?
-            </p>
+            <p class="text-base opacity-90 theme-dependent-text px-4">Твои три привычки уже ждут тебя! Готов?</p>
         </div>
-
-        <button id="start-day-btn" class="w-full max-w-xs py-3 px-6 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-semibold rounded-xl shadow-md active:scale-[0.98] transition-all cursor-pointer">
+        <button id="start-day-btn" class="w-full max-w-xs py-3 px-6 bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-semibold rounded-xl shadow-md active:scale-[0.98] transition-all cursor-pointer">
             Поехали!
         </button>
     </div>
 
+    <!-- 2. ПОЛНОЭКРАННЫЙ ФИНАЛЬНЫЙ ЭКРАН УСПЕХА (Когда выполнен ЛИМИТ из 12 задач) -->
+    <div id="mega-success-screen" class="hidden fixed inset-0 bg-gradient-to-br from-emerald-600 to-teal-700 z-50 flex-col items-center justify-center text-center p-6 space-y-8 text-white">
+        <div class="space-y-3">
+            <div class="text-7xl animate-bounce">🏆</div>
+            <h2 class="text-3xl font-extrabold tracking-tight">Абсолютный триумф!</h2>
+            <p class="text-emerald-100 max-w-xs mx-auto text-base">
+                Ты выполнил максимум на сегодня (12 микро-шагов). Отличный результат для твоего пульса здоровья!
+            </p>
+        </div>
+        <button id="show-success-history-btn" class="w-full max-w-xs py-3 px-6 bg-white text-teal-900 font-bold rounded-xl shadow-xl active:scale-[0.98] transition-all cursor-pointer">
+            Показать мои выполненные задачи
+        </button>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ ПРИЛОЖЕНИЯ -->
     <main id="main-content" class="w-full max-w-md mx-auto space-y-6 flex-grow flex flex-col">
         
+        <!-- Шапка и Прогресс -->
         <header class="text-center space-y-3 pt-4">
             <h1 class="text-2xl font-bold tracking-tight theme-dependent-text">Мой День</h1>
             <p class="text-sm opacity-60 theme-dependent-text" id="date-string">Загрузка даты...</p>
             
+            <!-- Прогресс-бар -->
             <div class="space-y-2">
                 <div class="flex justify-between text-xs font-semibold px-1">
-                    <span class="theme-dependent-text opacity-80">Прогресс</span>
+                    <span class="theme-dependent-text opacity-80">Прогресс дня</span>
                     <span id="progress-text" class="theme-dependent-text font-bold">0%</span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-800 h-3 rounded-full overflow-hidden shadow-inner">
@@ -56,20 +70,25 @@
             </div>
         </header>
 
+        <!-- Контейнер со списками -->
         <div id="content-slider" class="flex-grow flex flex-col justify-start py-4 space-y-4">
             
+            <!-- Баннер промежуточного успеха -->
             <section id="success-banner" class="hidden flex-col items-center justify-center text-center space-y-2 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                 <div class="text-3xl animate-bounce">🎉</div>
-                <h2 class="text-base font-bold text-emerald-500 dark:text-emerald-400">Все цели выполнены!</h2>
-                <p class="text-xs opacity-70 theme-dependent-text">Ты супер. Хочешь взять дополнительную нагрузку?</p>
+                <h2 class="text-base font-bold text-emerald-500 dark:text-emerald-400">Раунд выполнен!</h2>
+                <p class="text-xs opacity-70 theme-dependent-text">Отличный темп. Готов взять еще нагрузку?</p>
             </section>
 
+            <!-- Единый список привычек -->
             <section class="space-y-3 w-full" id="habits-container">
-                </section>
+                <!-- Сюда JS добавит привычки -->
+            </section>
         </div>
 
     </main>
 
+    <!-- Нижняя панель с кнопкой -->
     <footer class="w-full max-w-md mx-auto pt-4 pb-2">
         <button id="action-btn" class="w-full py-3 px-4 rounded-xl font-medium text-sm text-center border border-dashed border-gray-300 dark:border-gray-700 opacity-50 text-[--tg-theme-text-color] dark:text-[#f5f5f5] hover:opacity-100 active:scale-[0.98] transition-all cursor-pointer">
             🔄 Сбросить и обновить день
@@ -82,7 +101,10 @@
         tg.ready();
         tg.expand();
 
-        // Пул из 15 микро-привычек
+        // Константа максимального лимита задач на ОДИН день
+        const DAILY_MAX_LIMIT = 12;
+
+        // Полный расширенный пул из 30 микро-привычек
         const habitsPool = [
             { id: 1, text: "Выпить стакан чистой воды", icon: "💧" },
             { id: 2, text: "Сделать 5 глубоких вдохов и выдохов", icon: "🧘" },
@@ -98,48 +120,54 @@
             { id: 12, text: "Проверить осанку прямо сейчас", icon: "🧍" },
             { id: 13, text: "Выбросить 3 ненужные вещи или бумажки", icon: "🗑️" },
             { id: 14, text: "Сказать близкому человеку что-то приятное", icon: "❤️" },
-            { id: 15, text: "Составить список задач на завтра", icon: "📝" }
+            { id: 15, text: "Составить список задач на завтра", icon: "📝" },
+            { id: 16, text: "Улыбнуться своему отражению в зеркале", icon: "😊" },
+            { id: 17, text: "Сделать 10 вращений плечами", icon: "💪" },
+            { id: 18, text: "Проветрить комнату", icon: "🪟" },
+            { id: 19, text: "Протереть экран смартфона", icon: "📱" },
+            { id: 20, text: "Выпрямить спину и потянуться вверх", icon: "🧍‍♂️" },
+            { id: 21, text: "Удалить 5 ненужных скриншотов", icon: "📸" },
+            { id: 22, text: "Сделать глоток теплой воды с лимоном", icon: "🍋" },
+            { id: 23, text: "Записать одну вещь, которая порадовала", icon: "✏️" },
+            { id: 24, text: "Прибрать одну любую вещь на место", icon: "🏠" },
+            { id: 25, text: "Сделать паузу от соцсетей на 15 минут", icon: "📴" },
+            { id: 26, text: "Послушать одну любимую песню", icon: "🎵" },
+            { id: 27, text: "Умыть лицо прохладной водой", icon: "🧼" },
+            { id: 28, text: "Спланировать бюджет или крупные траты", icon: "🪙" },
+            { id: 29, text: "Сделать самомассаж шеи (1 минута)", icon: "💆‍♂️" },
+            { id: 30, text: "Постоять на одной ноге 30 секунд", icon: "🦩" }
         ];
 
         let currentHabits = [];
 
-        // Настройка отображения даты
         function setDate() {
             const options = { weekday: 'long', month: 'long', day: 'numeric' };
             document.getElementById('date-string').innerText = new Date().toLocaleDateString('ru-RU', options);
         }
 
-        // Автоматический выбор смайлика в зависимости от времени суток
         function setWelcomeEmoji() {
             const hour = new Date().getHours();
             const emojiContainer = document.getElementById('welcome-emoji');
-            
-            if (hour >= 5 && hour < 12) {
-                emojiContainer.innerText = "☀️";
-            } else if (hour >= 12 && hour < 18) {
-                emojiContainer.innerText = "☁️";
-            } else {
-                emojiContainer.innerText = "🌙";
-            }
+            if (hour >= 5 && hour < 12) emojiContainer.innerText = "☀️";
+            else if (hour >= 12 && hour < 18) emojiContainer.innerText = "☁️";
+            else emojiContainer.innerText = "🌙";
         }
 
-        // Выбор 3 случайных привычек (исключая те, что уже есть на экране)
         function getRandomHabits(count = 3) {
             const existingIds = currentHabits.map(h => h.id);
             const availableHabits = habitsPool.filter(h => !existingIds.includes(h.id));
             
-            // Если пул пуст (пользователь выполнил все 15 привычек за день!) — берем любые
-            const poolToUse = availableHabits.length >= count ? availableHabits : habitsPool;
+            const shuffled = [...availableHabits].sort(() => 0.5 - Math.random());
+            const takeCount = Math.min(count, availableHabits.length);
             
-            const shuffled = [...poolToUse].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, count).map(h => ({ ...h, completed: false }));
+            return shuffled.slice(0, takeCount).map(h => ({ ...h, completed: false }));
         }
 
-        // Загрузка состояния приложения
         function loadHabits() {
             const saved = localStorage.getItem('tg_mini_app_habits');
             const savedDate = localStorage.getItem('tg_mini_app_habits_date');
             const welcomeViewedDate = localStorage.getItem('tg_mini_app_welcome_viewed');
+            const megaSuccessDismissedDate = localStorage.getItem('tg_mini_app_mega_dismissed');
             const today = new Date().toDateString();
 
             if (saved && savedDate === today) {
@@ -147,52 +175,66 @@
                 if (welcomeViewedDate !== today) {
                     showWelcomeScreen(today);
                 }
+                // Если лимит в 12 задач выполнен и экран не закрывали, выводим фуллскрин финала
+                if (currentHabits.length >= DAILY_MAX_LIMIT && currentHabits.every(h => h.completed) && megaSuccessDismissedDate !== today) {
+                    showMegaSuccessScreen(today);
+                }
             } else {
                 currentHabits = getRandomHabits(3);
                 saveHabits(today);
+                localStorage.removeItem('tg_mini_app_mega_dismissed');
                 showWelcomeScreen(today);
             }
             renderHabits();
         }
 
-        // Показ экрана приветствия
         function showWelcomeScreen(todayString) {
             setWelcomeEmoji();
             const welcomeScreen = document.getElementById('welcome-screen');
             welcomeScreen.className = "fixed inset-0 bg-[--tg-theme-bg-color, #fafafa] dark:bg-[#18222d] z-50 flex flex-col items-center justify-center text-center p-6 space-y-6";
 
             document.getElementById('start-day-btn').onclick = () => {
-                if (tg.HapticFeedback) {
-                    tg.HapticFeedback.impactOccurred('medium');
-                }
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
                 localStorage.setItem('tg_mini_app_welcome_viewed', todayString);
                 welcomeScreen.className = "hidden";
             };
         }
 
-        // Добавление 3 новых дополнительных привычек
-        function addMoreHabits() {
+        // Показ финального экрана-поздравления (При достижении 12 задач)
+        function showMegaSuccessScreen(todayString) {
+            const megaScreen = document.getElementById('mega-success-screen');
+            megaScreen.className = "fixed inset-0 bg-gradient-to-br from-emerald-600 to-teal-700 z-50 flex flex-col items-center justify-center text-center p-6 space-y-8 text-white animate-fade-in";
+            
             if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('medium');
+                tg.HapticFeedback.notificationOccurred('success');
             }
+
+            document.getElementById('show-success-history-btn').onclick = () => {
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                localStorage.setItem('tg_mini_app_mega_dismissed', todayString);
+                megaScreen.className = "hidden";
+            };
+        }
+
+        function addMoreHabits() {
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             const newHabits = getRandomHabits(3);
             currentHabits = [...currentHabits, ...newHabits];
             saveHabits(new Date().toDateString());
             renderHabits();
         }
 
-        // Полный сброс дня
         function resetDay() {
             if (confirm("Хотите полностью сбросить прогресс и обновить список привычек на сегодня?")) {
                 currentHabits = [];
                 currentHabits = getRandomHabits(3);
                 saveHabits(new Date().toDateString());
+                localStorage.removeItem('tg_mini_app_mega_dismissed');
                 showWelcomeScreen(new Date().toDateString());
                 renderHabits();
             }
         }
 
-        // Сохранение данных
         function saveHabits(dateString = null) {
             localStorage.setItem('tg_mini_app_habits', JSON.stringify(currentHabits));
             if (dateString) {
@@ -200,19 +242,13 @@
             }
         }
 
-        // Переключение статуса задачи
         function toggleHabit(index) {
             currentHabits[index].completed = !currentHabits[index].completed;
-            
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('light');
-            }
-
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
             saveHabits();
             renderHabits();
         }
 
-        // Отрисовка интерфейса (Привычки, Прогресс, Кнопки)
         function renderHabits() {
             const container = document.getElementById('habits-container');
             const successBanner = document.getElementById('success-banner');
@@ -222,42 +258,55 @@
             const completedCount = currentHabits.filter(h => h.completed).length;
             const totalCount = currentHabits.length;
             const percentage = Math.round((completedCount / totalCount) * 100) || 0;
+            const today = new Date().toDateString();
             
-            // Обновление прогресс-бара
             document.getElementById('progress-text').innerText = `${percentage}% (${completedCount}/${totalCount})`;
             document.getElementById('progress-bar').style.width = `${percentage}%`;
 
-            // Управление отображением баннера Успеха и функционалом нижней кнопки
-            if (completedCount === totalCount && totalCount > 0) {
+            // ЛОГИКА 1: Достигнут жесткий дневной лимит в 12 привычек
+            if (completedCount >= DAILY_MAX_LIMIT && completedCount === totalCount) {
+                successBanner.classList.add('hidden');
+                
+                if (localStorage.getItem('tg_mini_app_mega_dismissed') !== today && !window.blockMegaTrigger) {
+                    window.blockMegaTrigger = true;
+                    showMegaSuccessScreen(today);
+                }
+
+                // БЛОКИРОВКА КНОПКИ (Лимит исчерпан)
+                actionBtn.innerText = "Лимит на сегодня исчерпан! Отдыхай 🛌";
+                actionBtn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm text-center bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border border-transparent shadow-none cursor-not-allowed opacity-50";
+                actionBtn.onclick = null;
+
+            // ЛОГИКА 2: Закрыт промежуточный раунд (3, 6 или 9 задач)
+            } else if (completedCount === totalCount && totalCount > 0) {
                 successBanner.classList.remove('hidden');
                 successBanner.classList.add('flex');
                 
-                // МЕНЯЕМ КНОПКУ: Теперь она добавляет новые задачи
                 actionBtn.innerText = "➕ Получить дополнительные привычки";
                 actionBtn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm text-center bg-emerald-500 text-white shadow-md active:scale-[0.98] transition-all cursor-pointer opacity-100";
                 actionBtn.onclick = addMoreHabits;
 
-                // Вибрация успеха в ТГ (срабатывает только в момент финиша)
                 if (tg.HapticFeedback && !window.lastStatusFinished) {
                     tg.HapticFeedback.notificationOccurred('success');
                 }
                 window.lastStatusFinished = true;
+                window.blockMegaTrigger = false;
+
+            // ЛОГИКА 3: Обычный игровой процесс (есть активные задачи)
             } else {
                 successBanner.classList.add('hidden');
-                successBanner.classList.remove('flex');
                 
-                // ВОЗВРАЩАЕМ КНОПКУ СБРОСА: Если есть незакрытые задачи
                 actionBtn.innerText = "🔄 Сбросить и обновить день";
                 actionBtn.className = "w-full py-3 px-4 rounded-xl font-medium text-sm text-center border border-dashed border-gray-300 dark:border-gray-700 opacity-50 text-[--tg-theme-text-color] dark:text-[#f5f5f5] hover:opacity-100 active:scale-[0.98] transition-all cursor-pointer";
                 actionBtn.onclick = resetDay;
                 
                 window.lastStatusFinished = false;
+                window.blockMegaTrigger = false;
             }
 
-            // Рендеринг карточек привычек
+            // Отрисовка карточек привычек
             currentHabits.forEach((habit, index) => {
                 const card = document.createElement('div');
-                
                 const baseClasses = "habit-card flex items-center justify-between p-4 rounded-xl border cursor-pointer select-none transition-colors ";
                 const stateClasses = habit.completed 
                     ? "bg-emerald-500/10 border-emerald-500/30 opacity-50 line-through text-[--tg-theme-text-color] dark:text-[#f5f5f5]" 
@@ -272,9 +321,7 @@
                         <span class="text-sm font-medium tracking-wide">${habit.text}</span>
                     </div>
                     <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                        habit.completed 
-                        ? 'bg-emerald-500 border-emerald-500 text-white' 
-                        : 'border-gray-400 dark:border-gray-600'
+                        habit.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-400 dark:border-gray-600'
                     }">
                         ${habit.completed ? '✓' : ''}
                     </div>
@@ -283,7 +330,6 @@
             });
         }
 
-        // Старт
         setDate();
         loadHabits();
     </script>

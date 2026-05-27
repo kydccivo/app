@@ -12,31 +12,48 @@
         @media (prefers-color-scheme: dark) {
             .theme-dependent-text { color: var(--tg-theme-text-color, #f9fafb); }
         }
-        /* Стили для кастомных тем, которые будут управляться через JS */
-        .theme-emerald { --accent-color: #10b981; --accent-gradient: from #14b8a6 to #10b981; --accent-text: #047857; --accent-bg-light: rgba(16, 185, 129, 0.1); --accent-border-light: rgba(16, 185, 129, 0.3); }
-        .theme-amethyst { --accent-color: #a855f7; --accent-gradient: from #8b5cf6 to #a855f7; --accent-text: #7e22ce; --accent-bg-light: rgba(168, 85, 247, 0.1); --accent-border-light: rgba(168, 85, 247, 0.3); }
-        .theme-cyberpunk { --accent-color: #ec4899; --accent-gradient: from #06b6d4 to #ec4899; --accent-text: #be185d; --accent-bg-light: rgba(236, 72, 153, 0.1); --accent-border-light: rgba(236, 72, 153, 0.3); }
         
-        /* Применение динамических CSS переменных */
-        .dynamic-bg { bg-gradient-to-r var(--accent-gradient); }
-        .dynamic-text { color: var(--accent-text); }
-        .dynamic-border:hover { border-color: var(--accent-border-light); }
+        /* Стили для кастомных тем, управляемые через JS */
+        .theme-emerald { 
+            --accent-color: #10b981; 
+            --accent-gradient-start: #14b8a6;
+            --accent-gradient-end: #10b981;
+            --accent-text: #047857; 
+            --accent-bg-light: rgba(16, 185, 129, 0.1); 
+            --accent-border-light: rgba(16, 185, 129, 0.3); 
+        }
+        .theme-amethyst { 
+            --accent-color: #a855f7; 
+            --accent-gradient-start: #8b5cf6;
+            --accent-gradient-end: #a855f7;
+            --accent-text: #7e22ce; 
+            --accent-bg-light: rgba(168, 85, 247, 0.1); 
+            --accent-border-light: rgba(168, 85, 247, 0.3); 
+        }
+        .theme-cyberpunk { 
+            --accent-color: #ec4899; 
+            --accent-gradient-start: #06b6d4;
+            --accent-gradient-end: #ec4899;
+            --accent-text: #be185d; 
+            --accent-bg-light: rgba(236, 72, 153, 0.1); 
+            --accent-border-light: rgba(236, 72, 153, 0.3); 
+        }
     </style>
 </head>
 <body class="theme-emerald bg-[--tg-theme-bg-color, #fafafa] text-[--tg-theme-text-color, #111827] dark:bg-[#18222d] dark:text-[#f5f5f5] font-sans antialiased min-h-screen p-4 flex flex-col justify-between selection:bg-teal-500/30">
 
-    <div id="welcome-screen" class="hidden fixed inset-0 bg-[--tg-theme-bg-color, #fafafa] dark:bg-[#18222d] z-50 flex-col items-center justify-center text-center p-6 space-y-6">
+    <div id="welcome-screen" class="hidden fixed inset-0 bg-[--tg-theme-bg-color, #fafafa] dark:bg-[#18222d] z-50 flex flex-col items-center justify-center text-center p-6 space-y-6">
         <div id="welcome-emoji" class="text-6xl subpixel-antialiased drop-shadow-md">☀️</div>
         <div class="space-y-2 max-w-sm">
             <h2 class="text-2xl font-bold tracking-tight theme-dependent-text">Привет!</h2>
             <p class="text-base opacity-90 theme-dependent-text px-4">Твои три привычки уже ждут тебя! Готов?</p>
         </div>
-        <button id="start-day-btn" style="background: var(--accent-color)" class="w-full max-w-xs py-3 px-6 text-white font-semibold rounded-xl shadow-md active:scale-[0.98] transition-all cursor-pointer">
+        <button id="start-day-btn" style="background-color: var(--accent-color)" class="w-full max-w-xs py-3 px-6 text-white font-semibold rounded-xl shadow-md active:scale-[0.98] transition-all cursor-pointer">
             Поехали!
         </button>
     </div>
 
-    <div id="mega-success-screen" class="hidden fixed inset-0 bg-gradient-to-br from-emerald-600 to-teal-700 z-50 flex-col items-center justify-center text-center p-6 space-y-8 text-white">
+    <div id="mega-success-screen" class="hidden fixed inset-0 bg-gradient-to-br from-emerald-600 to-teal-700 z-50 flex flex-col items-center justify-center text-center p-6 space-y-8 text-white">
         <div class="space-y-3">
             <div class="text-7xl animate-bounce">🏆</div>
             <h2 class="text-3xl font-extrabold tracking-tight">Дневной лимит взят!</h2>
@@ -47,10 +64,10 @@
         </button>
     </div>
 
-    <div id="profile-screen" class="hidden w-full max-w-md mx-auto space-y-6 flex-grow flex flex-col pt-4 animate-fade-in">
+    <div id="profile-screen" class="hidden w-full max-w-md mx-auto space-y-6 flex-grow flex flex-col pt-4">
         <header class="flex items-center justify-between">
             <button id="back-to-habits-btn" class="text-sm font-medium opacity-70 hover:opacity-100 flex items-center space-x-1 cursor-pointer">
-                <span>← К привычкам</span>
+                <span class="theme-dependent-text">← К привычкам</span>
             </button>
             <h2 class="text-xl font-bold theme-dependent-text">Мой Профиль</h2>
             <div class="w-10"></div>
@@ -59,21 +76,21 @@
         <section class="bg-[--tg-theme-secondary-bg-color, #ffffff] dark:bg-[#24303f] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
             <div class="flex justify-between items-center">
                 <div>
-                    <h3 class="text-xs font-bold uppercase tracking-wider opacity-50">Уровень</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-wider opacity-50 theme-dependent-text">Уровень</h3>
                     <p id="profile-level" class="text-2xl font-black" style="color: var(--accent-color)">Уровень 1</p>
                 </div>
                 <div class="text-right">
-                    <h3 class="text-xs font-bold uppercase tracking-wider opacity-50">Баланс</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-wider opacity-50 theme-dependent-text">Баланс</h3>
                     <p class="text-2xl font-black theme-dependent-text">🪙 <span id="profile-coins">0</span></p>
                 </div>
             </div>
             <div class="space-y-1">
                 <div class="flex justify-between text-xs opacity-70">
-                    <span>Опыт (XP)</span>
-                    <span id="profile-xp-text">0 / 100</span>
+                    <span class="theme-dependent-text">Опыт (XP)</span>
+                    <span id="profile-xp-text" class="theme-dependent-text">0 / 100</span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-800 h-2 rounded-full overflow-hidden">
-                    <div id="profile-xp-bar" style="background: var(--accent-color)" class="h-full w-0 transition-all duration-300"></div>
+                    <div id="profile-xp-bar" style="background-color: var(--accent-color)" class="h-full w-0 transition-all duration-300"></div>
                 </div>
             </div>
         </section>
@@ -162,15 +179,15 @@
                     <span id="progress-text" class="theme-dependent-text font-bold">0%</span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-800 h-3 rounded-full overflow-hidden shadow-inner">
-                    <div id="progress-bar" class="h-full w-0 transition-all duration-500 ease-out" style="background: linear-gradient(to right, var(--accent-gradient, #14b8a6, #10b981))"></div>
+                    <div id="progress-bar" class="h-full w-0 transition-all duration-500 ease-out"></div>
                 </div>
             </div>
         </header>
 
         <div id="content-slider" class="flex-grow flex flex-col justify-start py-4 space-y-4">
-            <section id="success-banner" class="hidden flex-col items-center justify-center text-center space-y-2 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20" style="background-color: var(--accent-bg-light); border-color: var(--accent-border-light)">
+            <section id="success-banner" class="hidden flex-col items-center justify-center text-center space-y-2 p-4 rounded-xl">
                 <div class="text-3xl animate-bounce">🎉</div>
-                <h2 class="text-base font-bold" style="color: var(--accent-color)">Раунд выполнен!</h2>
+                <h2 class="text-base font-bold" id="success-banner-title">Раунд выполнен!</h2>
                 <p class="text-xs opacity-70 theme-dependent-text">Отличный темп. Готов взять еще нагрузку?</p>
             </section>
 
@@ -188,11 +205,13 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand();
+        if (tg) {
+            tg.ready(); 
+            tg.expand();
+        }
 
         const DAILY_MAX_LIMIT = 12;
 
-        // Пул из 30 микро-привычек
         const habitsPool = [
             { id: 1, text: "Выпить стакан чистой воды", icon: "💧" },
             { id: 2, text: "Сделать 5 глубоких вдохов и выдохов", icon: "🧘" },
@@ -226,7 +245,6 @@
             { id: 30, text: "Постоять на одной ноге 30 секунд", icon: "🦩" }
         ];
 
-        // Глобальное состояние геймификации
         let currentHabits = [];
         let gameState = {
             xp: 0,
@@ -244,16 +262,28 @@
 
         function applyTheme(themeName) {
             document.body.className = `${themeName} bg-[--tg-theme-bg-color, #fafafa] text-[--tg-theme-text-color, #111827] dark:bg-[#18222d] dark:text-[#f5f5f5] font-sans antialiased min-h-screen p-4 flex flex-col justify-between selection:bg-teal-500/30`;
-            // Перерисовываем элементы управления для изменения стилей кнопок под текущую тему
+            
             updateThemeShopUI();
+            
             const startBtn = document.getElementById('start-day-btn');
             if(startBtn) startBtn.style.backgroundColor = 'var(--accent-color)';
+            
             const profileLvl = document.getElementById('profile-level');
             if(profileLvl) profileLvl.style.color = 'var(--accent-color)';
+            
             const profileXpBar = document.getElementById('profile-xp-bar');
             if(profileXpBar) profileXpBar.style.backgroundColor = 'var(--accent-color)';
+            
             const progressBar = document.getElementById('progress-bar');
-            if(progressBar) progressBar.style.background = 'linear-gradient(to right, var(--accent-gradient))';
+            if(progressBar) progressBar.style.background = 'linear-gradient(to right, var(--accent-gradient-start), var(--accent-gradient-end))';
+            
+            const banner = document.getElementById('success-banner');
+            if(banner) {
+                banner.style.backgroundColor = 'var(--accent-bg-light)';
+                banner.style.borderColor = 'var(--accent-border-light)';
+            }
+            const bannerTitle = document.getElementById('success-banner-title');
+            if(bannerTitle) bannerTitle.style.color = 'var(--accent-color)';
         }
 
         function getRandomHabits(count = 3) {
@@ -263,18 +293,20 @@
             return shuffled.slice(0, Math.min(count, availableHabits.length)).map(h => ({ ...h, completed: false }));
         }
 
-        // Подсчет XP для каждого уровня (100 * уровень)
         function getXpNeeded() { return gameState.level * 100; }
 
         function addXpAndCoins(xpAmount, coinsAmount) {
             gameState.xp += xpAmount;
             gameState.coins += coinsAmount;
 
-            // Логика Лвл-апа
+            // Защита от отрицательного баланса (при снятии чекбоксов)
+            if (gameState.xp < 0) gameState.xp = 0;
+            if (gameState.coins < 0) gameState.coins = 0;
+
             while (gameState.xp >= getXpNeeded()) {
                 gameState.xp -= getXpNeeded();
                 gameState.level += 1;
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
                 alert(`🎉 Поздравляем! Вы достигли ${gameState.level} уровня!`);
             }
 
@@ -284,7 +316,6 @@
         }
 
         function checkAchievements() {
-            const today = new Date().toDateString();
             const completedCount = currentHabits.filter(h => h.completed).length;
 
             if (completedCount >= 1 && !gameState.achievements.includes('first-step')) {
@@ -309,7 +340,6 @@
             const savedState = localStorage.getItem('tg_mini_app_game_state');
             if (savedState) {
                 gameState = JSON.parse(savedState);
-                applyTheme(gameState.activeTheme);
             }
 
             const savedHabits = localStorage.getItem('tg_mini_app_habits');
@@ -332,6 +362,7 @@
                 showWelcomeScreen(today);
             }
 
+            applyTheme(gameState.activeTheme);
             updateProfileUI();
             renderHabits();
         }
@@ -342,7 +373,6 @@
             document.getElementById('profile-xp-text').innerText = `${gameState.xp} / ${getXpNeeded()}`;
             document.getElementById('profile-xp-bar').style.width = `${(gameState.xp / getXpNeeded()) * 100}%`;
 
-            // Обновление отображения достижений
             const achs = {
                 'first-step': 'ach-first-step',
                 'perfect-round': 'ach-perfect-round',
@@ -351,4 +381,247 @@
             };
             for (let key in achs) {
                 const el = document.getElementById(achs[key]);
-                if (gameState.
+                if (el) {
+                    if (gameState.achievements.includes(key)) {
+                        el.classList.remove('opacity-40', 'grayscale');
+                        el.classList.add('border-emerald-500/40', 'bg-emerald-500/5');
+                    } else {
+                        el.classList.add('opacity-40', 'grayscale');
+                        el.classList.remove('border-emerald-500/40', 'bg-emerald-500/5');
+                    }
+                }
+            }
+            updateThemeShopUI();
+        }
+
+        function updateThemeShopUI() {
+            setupThemeButton('emerald', 0);
+            setupThemeButton('amethyst', 100);
+            setupThemeButton('cyberpunk', 200);
+        }
+
+        function setupThemeButton(id, cost) {
+            const btn = document.getElementById(`buy-theme-${id}`);
+            if (!btn) return;
+            
+            const themeKey = `theme-${id}`;
+
+            // Сбрасываем старые обработчики и классы, чтобы стили не накладывались слоями
+            btn.className = "py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer";
+            btn.onclick = null;
+
+            if (gameState.activeTheme === themeKey) {
+                btn.innerText = "Активна";
+                btn.classList.add("bg-gray-200", "text-gray-500", "dark:bg-gray-800", "cursor-not-allowed");
+            } else if (gameState.unlockedThemes.includes(themeKey)) {
+                btn.innerText = "Применить";
+                btn.classList.add("bg-gray-100", "text-gray-800", "dark:bg-gray-700", "dark:text-gray-200");
+                btn.onclick = () => {
+                    gameState.activeTheme = themeKey;
+                    saveGameState();
+                    applyTheme(themeKey);
+                    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                };
+            } else {
+                btn.innerText = `🪙 ${cost}`;
+                if (id === 'amethyst') btn.classList.add('bg-purple-600', 'text-white');
+                if (id === 'cyberpunk') btn.classList.add('bg-pink-600', 'text-white');
+                
+                btn.onclick = () => {
+                    if (gameState.coins >= cost) {
+                        gameState.coins -= cost;
+                        gameState.unlockedThemes.push(themeKey);
+                        gameState.activeTheme = themeKey;
+                        saveGameState();
+                        applyTheme(themeKey);
+                        if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                    } else {
+                        alert("Недостаточно монет для покупки темы! 🪙");
+                    }
+                };
+            }
+        }
+
+        function showWelcomeScreen(todayString) {
+            const hour = new Date().getHours();
+            const emoji = (hour >= 5 && hour < 12) ? "☀️" : (hour >= 12 && hour < 18) ? "☁️" : "🌙";
+            document.getElementById('welcome-emoji').innerText = emoji;
+            const welcomeScreen = document.getElementById('welcome-screen');
+            welcomeScreen.className = "fixed inset-0 bg-[--tg-theme-bg-color, #fafafa] dark:bg-[#18222d] z-50 flex flex-col items-center justify-center text-center p-6 space-y-6";
+
+            document.getElementById('start-day-btn').onclick = () => {
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                localStorage.setItem('tg_mini_app_welcome_viewed', todayString);
+                welcomeScreen.className = "hidden";
+            };
+        }
+
+        function showMegaSuccessScreen(todayString) {
+            const megaScreen = document.getElementById('mega-success-screen');
+            megaScreen.className = "fixed inset-0 bg-gradient-to-br from-emerald-600 to-teal-700 z-50 flex flex-col items-center justify-center text-center p-6 space-y-8 text-white";
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+
+            document.getElementById('show-success-history-btn').onclick = () => {
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                localStorage.setItem('tg_mini_app_mega_dismissed', todayString);
+                megaScreen.className = "hidden";
+            };
+        }
+
+        function addMoreHabits() {
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            const newHabits = getRandomHabits(3);
+            currentHabits = [...currentHabits, ...newHabits];
+            saveHabits();
+            renderHabits();
+        }
+
+        function resetDay() {
+            if (confirm("Сбросить прогресс и обновить привычки?")) {
+                currentHabits = getRandomHabits(3);
+                localStorage.removeItem('tg_mini_app_mega_dismissed');
+                saveHabits();
+                showWelcomeScreen(new Date().toDateString());
+                renderHabits();
+            }
+        }
+
+        function saveHabits() {
+            localStorage.setItem('tg_mini_app_habits', JSON.stringify(currentHabits));
+        }
+
+        function toggleHabit(index) {
+            const habit = currentHabits[index];
+            habit.completed = !habit.completed;
+            
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+            if (habit.completed) {
+                addXpAndCoins(10, 5);
+            } else {
+                addXpAndCoins(-10, -5);
+            }
+
+            saveHabits();
+            renderHabits();
+        }
+
+        function renderHabits() {
+            const container = document.getElementById('habits-container');
+            const successBanner = document.getElementById('success-banner');
+            const actionBtn = document.getElementById('action-btn');
+            container.innerHTML = '';
+
+            const completedCount = currentHabits.filter(h => h.completed).length;
+            const totalCount = currentHabits.length;
+            const percentage = Math.round((completedCount / totalCount) * 100) || 0;
+            const today = new Date().toDateString();
+            
+            document.getElementById('progress-text').innerText = `${percentage}% (${completedCount}/${totalCount})`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+
+            if (completedCount === totalCount && totalCount > 0 && !window.roundBonusTriggered?.includes(totalCount)) {
+                if(!window.roundBonusTriggered) window.roundBonusTriggered = [];
+                window.roundBonusTriggered.push(totalCount);
+                addXpAndCoins(30, 15);
+            }
+
+            if (completedCount >= DAILY_MAX_LIMIT && completedCount === totalCount) {
+                successBanner.classList.add('hidden');
+                if (localStorage.getItem('tg_mini_app_mega_dismissed') !== today && !window.blockMegaTrigger) {
+                    window.blockMegaTrigger = true;
+                    showMegaSuccessScreen(today);
+                }
+                actionBtn.innerText = "Лимит на сегодня исчерпан! Отдыхай 🛌";
+                actionBtn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm text-center bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 shadow-none cursor-not-allowed opacity-50";
+                actionBtn.onclick = null;
+                actionBtn.style.backgroundColor = '';
+            } else if (completedCount === totalCount && totalCount > 0) {
+                successBanner.classList.remove('hidden');
+                successBanner.classList.add('flex');
+                actionBtn.innerText = "➕ Получить дополнительные привычки";
+                actionBtn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm text-center text-white shadow-md active:scale-[0.98] transition-all cursor-pointer opacity-100";
+                actionBtn.style.backgroundColor = 'var(--accent-color)';
+                actionBtn.onclick = addMoreHabits;
+                window.blockMegaTrigger = false;
+            } else {
+                successBanner.classList.add('hidden');
+                successBanner.classList.remove('flex');
+                actionBtn.innerText = "🔄 Сбросить и обновить день";
+                actionBtn.className = "w-full py-3 px-4 rounded-xl font-medium text-sm text-center border border-dashed border-gray-300 dark:border-gray-700 opacity-50 text-[--tg-theme-text-color] dark:text-[#f5f5f5] hover:opacity-100 active:scale-[0.98] transition-all cursor-pointer";
+                actionBtn.style.backgroundColor = 'transparent';
+                actionBtn.onclick = resetDay;
+                window.blockMegaTrigger = false;
+            }
+
+            currentHabits.forEach((habit, index) => {
+                const card = document.createElement('div');
+                const baseClasses = "habit-card flex items-center justify-between p-4 rounded-xl border cursor-pointer select-none transition-colors ";
+                const stateClasses = habit.completed 
+                    ? "border-transparent opacity-50 line-through text-[--tg-theme-text-color] dark:text-[#f5f5f5]" 
+                    : "bg-[--tg-theme-secondary-bg-color, #ffffff] dark:bg-[#24303f] border-gray-200 dark:border-gray-800 text-[--tg-theme-text-color] dark:text-[#f5f5f5] shadow-sm";
+
+                card.className = baseClasses + stateClasses;
+                
+                if (habit.completed) {
+                    card.style.backgroundColor = 'var(--accent-bg-light)';
+                } else {
+                    card.style.backgroundColor = '';
+                }
+                
+                card.onclick = () => toggleHabit(index);
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">${habit.icon}</span>
+                        <span class="text-sm font-medium tracking-wide">${habit.text}</span>
+                    </div>
+                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all" style="${
+                        habit.completed ? 'background-color: var(--accent-color); border-color: var(--accent-color); color: white;' : 'border-color: #9ca3af;'
+                    }">
+                        ${habit.completed ? '✓' : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('open-profile-btn').onclick = () => {
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('main-footer').classList.add('hidden');
+            document.getElementById('profile-screen').classList.remove('hidden');
+            updateProfileUI();
+        };
+
+        document.getElementById('back-to-habits-btn').onclick = () => {
+            document.getElementById('profile-screen').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('main-footer').classList.remove('hidden');
+            renderHabits();
+        };
+
+        document.getElementById('tab-shop-btn').onclick = function() {
+            this.style.color = 'var(--accent-color)'; 
+            this.style.borderColor = 'var(--accent-color)';
+            const achBtn = document.getElementById('tab-achievements-btn');
+            achBtn.style.color = ''; 
+            achBtn.style.borderColor = 'transparent';
+            document.getElementById('shop-tab').classList.remove('hidden');
+            document.getElementById('achievements-tab').classList.add('hidden');
+        };
+
+        document.getElementById('tab-achievements-btn').onclick = function() {
+            this.style.color = 'var(--accent-color)'; 
+            this.style.borderColor = 'var(--accent-color)';
+            const shopBtn = document.getElementById('tab-shop-btn');
+            shopBtn.style.color = ''; 
+            shopBtn.style.borderColor = 'transparent';
+            document.getElementById('achievements-tab').classList.remove('hidden');
+            document.getElementById('shop-tab').classList.add('hidden');
+        };
+
+        setDate();
+        loadData();
+    </script>
+</body>
+</html>
